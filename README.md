@@ -1,5 +1,2 @@
 # HackGT
-$$$swagswagswag$$$
-helloworld
-SwagMOney
-HelloWorld24
+netflix and chill
