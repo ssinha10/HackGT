@@ -13,7 +13,6 @@
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="bower_components/Materialize/dist/materialize.min.css">
     <!-- endbuild -->
   </head>
   <body ng-app="hackgtApp">
@@ -30,7 +29,7 @@
   </nav>
 
     <div class="container">
-    <div ng-include="'views/main.html'" ng-controller="MainCtrl"></div>
+    <div ng-include="'views/main.html'" ng-controller="MainCtrl as main"></div>
     </div>
 
     <!-- build:js(.) scripts/vendor.js -->
@@ -39,6 +38,7 @@
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-touch/angular-touch.js"></script>
     <script src="bower_components/Materialize/bin/materialize.js"></script>
+    <script src="bower_components/oauth-signature/dist/oauth-signature.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -46,5 +46,7 @@
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <!-- endbuild -->
+
+
 </body>
 </html>
