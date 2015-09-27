@@ -20,14 +20,10 @@
       <div class="row"></div>
       <label for="radiusRange">Radius</label>
       <div class="range-field">
-        <input type="range" id="radiusRange" min="0" max="10" ng-model="main.formData.radius"/>
+        <input type="range" id="radiusRange" min="1" max="100" ng-model="main.formData.radius"/>
       </div>
-      <pre>
-        {{ main.formData  | json }}
-        {{ main.searchData  | json }}
-      </pre>
       <div class="row"></div>
-      <i><button class="btn waves-effect waves-light" type="submit" name="action" ng-click="main.submit(main.formData)">Submit</button></i>
+      <i><button class="btn waves-effect waves-light" type="submit" name="action" ng-click="main.gg(main.formData)">Submit</button></i>
     </form>
   </div>
   <!-- restaurants -->

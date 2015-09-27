@@ -23,14 +23,7 @@ angular.module('hackgtApp')
     //   radius: 1000
     // }
 
-    self.findMidpoint = function(loc1,loc2) {
-      var latMidpoint = (loc1.latitude + loc2.latitude)/2;
-      var lonMidpoint = (loc1.longitude + loc2.longitude)/2;
-      return {
-        latitude: latMidpoint,
-        longitude: lonMidpoint
-      }
-    }
+
 
 /*     Yelp.searchYelp(self.searchData, function(data){
       self.restaurants = data;
@@ -49,29 +42,103 @@ angular.module('hackgtApp')
           lat: defaultLocation.latitude,
           lng: defaultLocation.longitude
         },
-        zoom: 13
+        zoom: 12
       });
     }
 
-    self.getCoordinates = function(address) {
+    // self.getCoordinates = function(address, callback) {
+    //   $http
+    //     .get('https://maps.googleapis.com/maps/api/geocode/json', {
+    //       params: {
+    //         address: address,
+    //         key: 'AIzaSyDKTaF5QtzuZLiOH3TNIUnOEThG6db0k_w'
+    //       }
+    //     })
+    //     .success(function(data){
+    //       // console.log('getCoordinates data', data.results[0].geometry.location);
+    //       // self.addressCoordinates = {
+    //       //   latitude: data.results[0].geometry.location.lat,
+    //       //   longitude: data.results[0].geometry.location.lng
+    //       // }
+    //       return {
+    //         latitude: data.results[0].geometry.location.lat,
+    //         longitude: data.results[0].geometry.location.lng
+    //       }
+    //       callback();
+    //     });
+    // }
+
+    // self.submit = function (formData) {
+    //   // var add1 = self.getCoordinates(formData.address1);
+    //   // var add2 = self.getCoordinates(formData.address2);
+    //   // var loc = self.findMidpoint(add1, add2);
+    //   var loc = self.findMidpoint(self.addressCoordinates);
+    //   console.log('add1', add1);
+    //   console.log('add2', add2);
+    //   console.log('loc', loc);
+    //   self.searchData = {
+    //     location: self.addressCoordinates,
+    //     radius: formData.radius * 1000 || 5000
+    //   };
+    //   Yelp.searchYelp(searchData).success(function(data){
+    //     console.log(data);
+    //     self.restaurants = data;
+    //     self.setMarkers(self.map);
+    //   });
+    // }
+
+    self.gg = function(formData) {
       $http
         .get('https://maps.googleapis.com/maps/api/geocode/json', {
           params: {
-            address: address,
+            address: formData.address1,
             key: 'AIzaSyDKTaF5QtzuZLiOH3TNIUnOEThG6db0k_w'
           }
         })
         .success(function(data){
-          // console.log('getCoordinates data', data.results[0].geometry.location);
-          // self.addressCoordinates = {
-          //   latitude: data.results[0].geometry.location.lat,
-          //   longitude: data.results[0].geometry.location.lng
-          // }
-          return {
+          var loc1 = {
             latitude: data.results[0].geometry.location.lat,
             longitude: data.results[0].geometry.location.lng
-          }
+          };
+          $http
+            .get('https://maps.googleapis.com/maps/api/geocode/json', {
+              params: {
+                address: formData.address2,
+                key: 'AIzaSyDKTaF5QtzuZLiOH3TNIUnOEThG6db0k_w'
+              }
+            })
+            .success(function(data){
+              var loc2 = {
+                latitude: data.results[0].geometry.location.lat,
+                longitude: data.results[0].geometry.location.lng
+              };
+              var loc = self.findMidpoint(loc1, loc2);
+              // console.log('loc', loc);
+              self.map.setCenter({
+                lat: loc.latitude,
+                lng: loc.longitude
+              });
+              self.searchData = {
+                location: loc,
+                radius: formData.radius * 100 || 5000
+              };
+              // console.log('self.searchData', self.searchData);
+              Yelp.searchYelp(self.searchData, function(yelpData){
+                console.log('yelpData', yelpData);
+                self.restaurants = yelpData;
+                self.setMarkers(self.map);
+              });
+            })
         });
+    }
+
+    self.findMidpoint = function(loc1,loc2) {
+      var latMidpoint = (loc1.latitude + loc2.latitude)/2;
+      var lonMidpoint = (loc1.longitude + loc2.longitude)/2;
+      return {
+        latitude: latMidpoint,
+        longitude: lonMidpoint
+      }
     }
 
     /* Yelp.searchYelp(self.searchData, function(data){
@@ -110,30 +177,13 @@ angular.module('hackgtApp')
       });
     }
 
-    self.formData = {
-      address1: '75 Fifth Street NW, Atlanta, GA, 30308',
-      address2: '800 Spring Street, Atlanta, GA, 30308',
-      radius: 5
-    }
+    // self.formData = {
+    //   address1: '75 Fifth Street NW, Atlanta, GA, 30308',
+    //   address2: '800 Spring Street, Atlanta, GA, 30308',
+    //   radius: 5
+    // }
 
-    self.submit = function (formData) {
-      // var add1 = self.getCoordinates(formData.address1);
-      // var add2 = self.getCoordinates(formData.address2);
-      // var loc = self.findMidpoint(add1, add2);
-      var loc = self.findMidpoint(self.addressCoordinates)
-      console.log('add1', add1);
-      console.log('add2', add2);
-      console.log('loc', loc);
-      self.searchData = {
-        location: self.addressCoordinates,
-        radius: formData.radius * 1000 || 5000
-      };
-      Yelp.searchYelp(searchData).success(function(data){
-        console.log(data);
-        self.restaurants = data;
-        self.setMarkers(self.map);
-      });
-    }
+
 
   })
   .factory('Yelp', function($http) {
@@ -152,13 +202,15 @@ angular.module('hackgtApp')
           term: 'restaurants',
           radius_filter: searchData.radius,
           sort: 2,
-          limit: 3
+          limit: 5
         };
         var consumerSecret = 'dTnYPlPtjqVuCPLBew6TxuaXv78'; //Consumer Secret
         var tokenSecret = 'mFFZloRU190j6NBGwYPvbvTI-E4'; //Token Secret
         var signature = oauthSignature.generate(method, url, params, consumerSecret, tokenSecret, { encodeSignature: false});
         params['oauth_signature'] = signature;
+        console.log('searchData', searchData);
         $http.jsonp(url, {params: params}).success(callback);
+        // $http.get(url, {params: params}).success(callback);
       }
     }
   });
