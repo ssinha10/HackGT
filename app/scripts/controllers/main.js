@@ -25,6 +25,7 @@ angular.module('hackgtApp')
 
     Yelp.searchYelp(self.searchData, function(data){
       self.restaurants = data;
+      self.setMarkers(self.map);
     });
 
     self.map;
@@ -36,16 +37,16 @@ angular.module('hackgtApp')
         },
         zoom: 13
       });
-      self.setMarkers(self.map);
+      // self.setMarkers(self.map);
     }
 
-    self.restaurants = [
-      ['Bondi Beach', -33.890542, 151.274856, 4],
-      ['Coogee Beach', -33.923036, 151.259052, 5],
-      ['Cronulla Beach', -34.028249, 151.157507, 3],
-      ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
-      ['Maroubra Beach', -33.950198, 151.259302, 1]
-    ];
+    // self.restaurants = [
+    //   ['Bondi Beach', -33.890542, 151.274856, 4],
+    //   ['Coogee Beach', -33.923036, 151.259052, 5],
+    //   ['Cronulla Beach', -34.028249, 151.157507, 3],
+    //   ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
+    //   ['Maroubra Beach', -33.950198, 151.259302, 1]
+    // ];
 
     self.setMarkers = function(map) {
       var shape = {
@@ -54,18 +55,32 @@ angular.module('hackgtApp')
       };
       var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       var labelIndex = 0;
-      console.log(self.restaurants);
-      for (var i = 0; i < self.restaurants.length; i++) {
-        var restaurant = self.restaurants[i];
+      // console.log(self.restaurants);
+
+      self.restaurants.businesses.forEach(function(restaurant){
         var marker = new google.maps.Marker({
-          position: {lat: restaurant[1], lng: restaurant[2]},
+          position: {
+            lat: restaurant.location.coordinate.latitude,
+            lng: restaurant.location.coordinate.longitude
+          },
           map: map,
           shape: shape,
           label: labels[labelIndex++ % labels.length],
-          title: restaurant[0],
-          zIndex: restaurant[3]
+          title: restaurant.name
         });
-      }
+      });
+
+      // for (var i = 0; i < self.restaurants.length; i++) {
+      //   var restaurant = self.restaurants[i];
+      //   var marker = new google.maps.Marker({
+      //     position: {lat: restaurant[1], lng: restaurant[2]},
+      //     map: map,
+      //     shape: shape,
+      //     label: labels[labelIndex++ % labels.length],
+      //     title: restaurant[0],
+      //     zIndex: restaurant[3]
+      //   });
+      // }
     }
 
   })
