@@ -29,10 +29,10 @@ angular.module('hackgtApp')
         return {latitude: latMidpoint, longitude: lonMidpoint}
     }
 
-    Yelp.searchYelp(self.searchData, function(data){
+/*     Yelp.searchYelp(self.searchData, function(data){
       self.restaurants = data;
       self.setMarkers(self.map);
-    });
+    }); */
 
     self.map;
 
@@ -59,10 +59,10 @@ angular.module('hackgtApp')
         });
     }
 
-    Yelp.searchYelp(self.searchData, function(data){
+    /* Yelp.searchYelp(self.searchData, function(data){
       self.restaurants = data;
       self.setMarkers(self.map);
-    });
+    }); */
 
     self.setMarkers = function(map) {
       var shape = {
@@ -93,6 +93,21 @@ angular.module('hackgtApp')
           marker.info.close();
         });
       });
+    }
+    
+    self.submit = function (formData) {
+        var add1 = self.getCoordinates(formData.address1);
+        var add2 = self.getCoordinates(formData.address2);
+        var loc = self.findMidpoint(add1, add2);
+        var searchData = {
+            location: loc,
+            radius: formData.radius * 1000
+        };
+        Yelp.searchAll(searchData).success(function(data){
+          console.log(data);
+          self.restaurants = data;
+          self.setMarkers(self.map);
+        });
     }
 
   })
