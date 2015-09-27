@@ -8,8 +8,12 @@
  * Controller of the hackgtApp
  */
 angular.module('hackgtApp')
-  .controller('MainCtrl', function (Yelp) {
+  .controller('MainCtrl', function ($scope, $rootScope, Yelp) {
     var self = this;
+
+    $scope.$on('$includeContentLoaded', function() {
+      self.initMap();
+    });
 
     self.searchData = {
       location: {
@@ -22,6 +26,18 @@ angular.module('hackgtApp')
     Yelp.searchYelp(self.searchData, function(data){
       self.restaurants = data;
     });
+
+    self.map;
+    self.initMap = function() {
+      console.log(self.searchData);
+      self.map = new google.maps.Map(document.getElementById('map'), {
+        center: {
+          lat: self.searchData.location.latitude,
+          lng: self.searchData.location.longitude
+        },
+        zoom: 13
+      });
+    }
 
   })
   .factory('Yelp', function($http) {
@@ -56,3 +72,4 @@ angular.module('hackgtApp')
     for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
     return result;
   }
+
