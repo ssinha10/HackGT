@@ -24,9 +24,10 @@
       </div>
       <pre>
         {{ main.formData  | json }}
+        {{ main.searchData  | json }}
       </pre>
       <div class="row"></div>
-      <i><button class="btn waves-effect waves-light" type="submit" name="action" ng-click="submit(main.formData)">Submit</button></i>
+      <i><button class="btn waves-effect waves-light" type="submit" name="action" ng-click="main.submit(main.formData)">Submit</button></i>
     </form>
   </div>
   <!-- restaurants -->

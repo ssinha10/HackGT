@@ -8,25 +8,28 @@
  * Controller of the hackgtApp
  */
 angular.module('hackgtApp')
-  .controller('MainCtrl', function ($scope, Yelp) {
+  .controller('MainCtrl', function ($scope, $http, Yelp) {
     var self = this;
 
     $scope.$on('$includeContentLoaded', function() {
       self.initMap();
     });
 
-    self.searchData = {
-      location: {
-        latitude: 33.776706,
-        longitude: -84.395697
-      },
-      radius: 1000
-    }
+    // self.searchData = {
+    //   location: {
+    //     latitude: 33.776706,
+    //     longitude: -84.395697
+    //   },
+    //   radius: 1000
+    // }
 
     self.findMidpoint = function(loc1,loc2) {
-        latMidpoint = (loc1.latitude + loc2.latitude)
-        lonMidpoint = (loc1.longitude + loc2.longitude)
-        return {latitude: latMidpoint, longitude: lonMidpoint}
+      var latMidpoint = (loc1.latitude + loc2.latitude)/2;
+      var lonMidpoint = (loc1.longitude + loc2.longitude)/2;
+      return {
+        latitude: latMidpoint,
+        longitude: lonMidpoint
+      }
     }
 
 /*     Yelp.searchYelp(self.searchData, function(data){
@@ -37,10 +40,14 @@ angular.module('hackgtApp')
     self.map;
 
     self.initMap = function() {
+      var defaultLocation = {
+        latitude: 33.776706,
+        longitude: -84.395697
+      };
       self.map = new google.maps.Map(document.getElementById('map'), {
         center: {
-          lat: self.searchData.location.latitude,
-          lng: self.searchData.location.longitude
+          lat: defaultLocation.latitude,
+          lng: defaultLocation.longitude
         },
         zoom: 13
       });
@@ -55,7 +62,15 @@ angular.module('hackgtApp')
           }
         })
         .success(function(data){
-          return data.results[0].geometry.location;
+          // console.log('getCoordinates data', data.results[0].geometry.location);
+          // self.addressCoordinates = {
+          //   latitude: data.results[0].geometry.location.lat,
+          //   longitude: data.results[0].geometry.location.lng
+          // }
+          return {
+            latitude: data.results[0].geometry.location.lat,
+            longitude: data.results[0].geometry.location.lng
+          }
         });
     }
 
@@ -94,20 +109,30 @@ angular.module('hackgtApp')
         });
       });
     }
-    
+
+    self.formData = {
+      address1: '75 Fifth Street NW, Atlanta, GA, 30308',
+      address2: '800 Spring Street, Atlanta, GA, 30308',
+      radius: 5
+    }
+
     self.submit = function (formData) {
-        var add1 = self.getCoordinates(formData.address1);
-        var add2 = self.getCoordinates(formData.address2);
-        var loc = self.findMidpoint(add1, add2);
-        var searchData = {
-            location: loc,
-            radius: formData.radius * 1000
-        };
-        Yelp.searchAll(searchData).success(function(data){
-          console.log(data);
-          self.restaurants = data;
-          self.setMarkers(self.map);
-        });
+      // var add1 = self.getCoordinates(formData.address1);
+      // var add2 = self.getCoordinates(formData.address2);
+      // var loc = self.findMidpoint(add1, add2);
+      var loc = self.findMidpoint(self.addressCoordinates)
+      console.log('add1', add1);
+      console.log('add2', add2);
+      console.log('loc', loc);
+      self.searchData = {
+        location: self.addressCoordinates,
+        radius: formData.radius * 1000 || 5000
+      };
+      Yelp.searchYelp(searchData).success(function(data){
+        console.log(data);
+        self.restaurants = data;
+        self.setMarkers(self.map);
+      });
     }
 
   })
