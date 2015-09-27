@@ -23,6 +23,12 @@ angular.module('hackgtApp')
       radius: 1000
     }
 
+    self.findMidpoint = function(loc1,loc2) {
+        latMidpoint = (loc1.latitude + loc2.latitude)
+        lonMidpoint = (loc1.longitude + loc2.longitude)
+        return {latitude: latMidpoint, longitude: lonMidpoint}
+    }
+
     Yelp.searchYelp(self.searchData, function(data){
       self.restaurants = data;
       self.setMarkers(self.map);
