@@ -33,6 +33,19 @@ angular.module('hackgtApp')
       });
     }
 
+    self.getCoordinates = function(address) {
+      $http
+        .get('https://maps.googleapis.com/maps/api/geocode/json', {
+          params: {
+            address: address,
+            key: 'AIzaSyDKTaF5QtzuZLiOH3TNIUnOEThG6db0k_w'
+          }
+        })
+        .success(function(data){
+          return data.results[0].geometry.location;
+        });
+    }
+
     Yelp.searchYelp(self.searchData, function(data){
       self.restaurants = data;
       self.setMarkers(self.map);
