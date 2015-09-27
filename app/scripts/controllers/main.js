@@ -8,7 +8,7 @@
  * Controller of the hackgtApp
  */
 angular.module('hackgtApp')
-  .controller('MainCtrl', function ($scope, $rootScope, Yelp) {
+  .controller('MainCtrl', function ($scope, Yelp) {
     var self = this;
 
     $scope.$on('$includeContentLoaded', function() {
@@ -35,6 +35,7 @@ angular.module('hackgtApp')
     });
 
     self.map;
+
     self.initMap = function() {
       self.map = new google.maps.Map(document.getElementById('map'), {
         center: {
@@ -43,16 +44,25 @@ angular.module('hackgtApp')
         },
         zoom: 13
       });
-      // self.setMarkers(self.map);
     }
 
-    // self.restaurants = [
-    //   ['Bondi Beach', -33.890542, 151.274856, 4],
-    //   ['Coogee Beach', -33.923036, 151.259052, 5],
-    //   ['Cronulla Beach', -34.028249, 151.157507, 3],
-    //   ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
-    //   ['Maroubra Beach', -33.950198, 151.259302, 1]
-    // ];
+    self.getCoordinates = function(address) {
+      $http
+        .get('https://maps.googleapis.com/maps/api/geocode/json', {
+          params: {
+            address: address,
+            key: 'AIzaSyDKTaF5QtzuZLiOH3TNIUnOEThG6db0k_w'
+          }
+        })
+        .success(function(data){
+          return data.results[0].geometry.location;
+        });
+    }
+
+    Yelp.searchYelp(self.searchData, function(data){
+      self.restaurants = data;
+      self.setMarkers(self.map);
+    });
 
     self.setMarkers = function(map) {
       var shape = {
@@ -61,7 +71,6 @@ angular.module('hackgtApp')
       };
       var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       var labelIndex = 0;
-      // console.log(self.restaurants);
 
       self.restaurants.businesses.forEach(function(restaurant){
         var marker = new google.maps.Marker({
@@ -74,19 +83,16 @@ angular.module('hackgtApp')
           label: labels[labelIndex++ % labels.length],
           title: restaurant.name
         });
+        marker.info = new google.maps.InfoWindow({
+          content: '<h6> ' + restaurant.name + '</h6>'
+        });
+        google.maps.event.addListener(marker, 'mouseover', function() {
+          marker.info.open(map, marker);
+        });
+        google.maps.event.addListener(marker, 'mouseout', function() {
+          marker.info.close();
+        });
       });
-
-      // for (var i = 0; i < self.restaurants.length; i++) {
-      //   var restaurant = self.restaurants[i];
-      //   var marker = new google.maps.Marker({
-      //     position: {lat: restaurant[1], lng: restaurant[2]},
-      //     map: map,
-      //     shape: shape,
-      //     label: labels[labelIndex++ % labels.length],
-      //     title: restaurant[0],
-      //     zIndex: restaurant[3]
-      //   });
-      // }
     }
 
   })

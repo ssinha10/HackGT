@@ -6,6 +6,8 @@
     <!-- map -->
     <div id="map"></div>
     <!-- form -->
+    <div class="row"></div>
+    <div class="row"></div>
     <form>
       <div class="input-field">
         <input id="address1" type="text" class="validate" ng-model="main.address1">
@@ -26,11 +28,18 @@
   </div>
   <!-- restaurants -->
   <div class="col s4">
-    <div class="collection">
-      <a href="http://www.google.com" class="collection-item">Restaurant 1</a>
-      <a href="#!" class="collection-item">Restaurant 2</a>
-      <a href="#!" class="collection-item">Restaurant 3</a>
-      <a href="#!" class="collection-item">Restaurant 4</a>
+    <h4>Results</h4>
+    <div ng-repeat="restaurant in main.restaurants.businesses" class="restaurantBox">
+      <a ng-href="{{restaurant.url}}" target="new">
+        <div>
+          <h5>{{ restaurant.name }}</h5>
+          <div class="row valign-wrapper">
+            <h6>Rating:<h6>
+            <img class="valign" ng-src="{{restaurant.rating_img_url}}">
+          </div>
+        </div>
+      </a>
     </div>
   </div>
+
 </div>
